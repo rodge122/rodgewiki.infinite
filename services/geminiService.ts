@@ -2,12 +2,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { WikiArticle } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const articleSchema = {
     type: Type.OBJECT,
     properties: {
@@ -50,6 +44,11 @@ const articleSchema = {
 
 
 export const generateRandomArticle = async (): Promise<WikiArticle> => {
+    if (!process.env.API_KEY) {
+        throw new Error("Ключ API не настроен. Пожалуйста, убедитесь, что переменная окружения API_KEY установлена.");
+    }
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
@@ -66,12 +65,15 @@ export const generateRandomArticle = async (): Promise<WikiArticle> => {
 
         // Basic validation
         if (!articleData.title || !articleData.summary || !articleData.sections) {
-            throw new Error("Received malformed article data from API.");
+            throw new Error("Получены некорректные данные статьи от API.");
         }
 
         return articleData;
     } catch (error) {
-        console.error("Error generating article:", error);
-        throw new Error("Failed to fetch or parse article from Gemini API.");
+        console.error("Ошибка при генерации статьи:", error);
+        if (error instanceof Error) {
+            throw new Error(`Не удалось сгенерировать статью: ${error.message}`);
+        }
+        throw new Error("Не удалось получить или обработать статью от Gemini API.");
     }
 };

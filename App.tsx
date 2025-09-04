@@ -21,7 +21,11 @@ const App: React.FC = () => {
             setArticle(newArticle);
         } catch (err) {
             console.error(err);
-            setError('Не удалось сгенерировать статью. Пожалуйста, попробуйте еще раз.');
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Произошла неизвестная ошибка. Пожалуйста, попробуйте еще раз.');
+            }
         } finally {
             setIsLoading(false);
         }

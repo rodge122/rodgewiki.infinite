@@ -1,0 +1,5 @@
+{
+  "name": "rodgewiki.infinite",
+  "description": "An application that uses AI to generate a random, fictional Wikipedia-style article in real-time, providing endless discovery of imaginary topics.",
+  "requestFramePermissions": []
+}
